@@ -1,20 +1,18 @@
 import ITaskListResponse from "../models/ITaskListResponse";
-import IFilters from "../models/IFilters";
 import ITaskResponse from "../models/ITaskResponse";
 import ITaskRequest from "../models/ITaskRequest";
 import IError from "../models/IError";
 
 const API_BASE = "https://cms.dev-land.host/api";
 
-export const getTaskList = async (filters: IFilters, page = 1): Promise<ITaskListResponse> => {
+export const getTaskList = async (statusParams: string, page): Promise<ITaskListResponse> => {
 
+    // Не понял как в URLSearchParams вставить 2 одинаковых параметра с разным значением через последовательность name-value пар,
+    // он просто перезаписывает их.
+    // Поэтому приходится руками вводить параметры
     const res: ITaskListResponse = await fetch(API_BASE + "/tasks?" + new URLSearchParams(
-        filters.status ? {
-            "pagination[page]": page.toString(),
-            "filters[status]": filters.status,
-        } : {
-            "pagination[page]": page.toString(),
-        }),
+        {"pagination[page]": page.toString(),}
+        ) + statusParams,
         {
         }).then((response) => {
             return response.json();

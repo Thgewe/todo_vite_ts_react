@@ -144,7 +144,6 @@ const TaskItem = memo(({id, title, description, status}: ITaskItem) => {
                 </Typography.Title>
                 <Status>
                     <Select
-                        // defaultValue={status.split(" ")[0]}
                         value={statusState.split(" ")[0]}
                         options={[
                             {value: "not_completed", label: <span>In progress</span>},

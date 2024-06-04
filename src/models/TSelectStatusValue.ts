@@ -1,0 +1,1 @@
+export type TSelectStatusValue = "all" | "completed" | "not_completed" | "favourite";
