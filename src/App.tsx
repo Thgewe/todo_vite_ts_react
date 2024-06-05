@@ -8,7 +8,7 @@ import ModalAddEdit from "./components/ModalAddEdit";
 import useModalStore from "./store/modalStore";
 import IModalState from "./models/IModalState";
 import {Alert, Button, Select} from "antd";
-import {debounce} from "./utils/debounce";
+import {paginationDebounce} from "./utils/paginationDebounce";
 import useTasksParamsStore from "./store/tasksParamsStore";
 import ITasksParamsState from "./models/ITasksParamsState";
 import styled from "styled-components";
@@ -31,12 +31,12 @@ const Controls = styled.div`
 `;
 
 function App() {
-    const {addTaskList, clear} = useTasksStore<ITasksState>(state => state);
+    const {addTaskList, clear, tasks} = useTasksStore<ITasksState>(state => state);
     const { filters, pagination, setParams } = useTasksParamsStore<ITasksParamsState>(state => state)
     const { open } = useModalStore<IModalState>(state => state);
     const list = useRef(null);
 
-    const [fetching, isLoading, isError] = useFetch(async (statusFilter: TSelectStatusValue, page: number, override = false) => {
+    const [fetching, isLoading, isError] = useFetch(async (statusFilter: TSelectStatusValue, page: number) => {
         const data = await getTaskList(buildFiltersStatusParamsString(statusFilter), page);
 
         if ("error" in data) {
@@ -51,21 +51,38 @@ function App() {
         fetching(filters.status, 1);
     }, [])
 
-    // const scrollHandler = debounce(() => {
-    //     if ((list.current as HTMLDivElement).clientHeight
-    //         - document.documentElement.clientHeight
-    //         - document.documentElement.scrollTop
-    //         < document.documentElement.clientHeight + 100 && !isLoading) {
-    //     }
-    // }, 1200)
+    useEffect(() => {
+        window.addEventListener("scroll", windowScrollHandler);
+
+        return () => {
+            window.removeEventListener("scroll", windowScrollHandler);
+        }
+    }, [pagination, isLoading])
+
+    const windowScrollHandler = () => {
+        scrollHandler(pagination, isLoading);
+    }
+    const scrollHandler = paginationDebounce((pagination: ITasksParamsState["pagination"], isLoading: boolean) => {
+        if ((list.current as HTMLDivElement).clientHeight
+            - document.documentElement.clientHeight
+            - document.documentElement.scrollTop
+            < document.documentElement.clientHeight + 100 && !isLoading) {
+            if (pagination && pagination.page < pagination.pageCount) {
+                console.log("fetching");
+                fetching(filters.status, pagination.page + 1)
+            }
+        }
+    }, 200)
+
 
     const changeStatusFilter = (value: TSelectStatusValue) => {
         clear();
-        fetching(value, 1, true);
+        fetching(value, 1);
     }
 
     return (
         <>
+            <button onClick={() => {console.log(pagination); console.log(tasks)}}>asdasdasda</button>
             <Controls>
                 <Button onClick={() => {open()}}>Add</Button>
                 <Select
@@ -86,6 +103,9 @@ function App() {
                         <TaskList />
                         {isLoading && <LoadingOutlined />}
                     </>
+                }
+                {pagination && pagination.page === pagination.pageCount && !isLoading
+                    && <Alert message={"That's all"} type={"info"}/>
                 }
             </RefWrapper>
             <ModalAddEdit />
