@@ -17,6 +17,11 @@ import {TSelectStatusValue} from "./models/TSelectStatusValue";
 import ITasksState from "./models/ITasksState";
 import {LoadingOutlined} from "@ant-design/icons";
 
+const AppWrapper = styled.div`
+  padding: 1rem;
+  margin: 0 auto;
+  max-width: 1440px;
+`;
 const RefWrapper = styled.div`
   // loadingSvg
   & > span {
@@ -31,7 +36,7 @@ const Controls = styled.div`
 `;
 
 function App() {
-    const {addTaskList, clear, tasks} = useTasksStore<ITasksState>(state => state);
+    const {addTaskList, clear} = useTasksStore<ITasksState>(state => state);
     const { filters, pagination, setParams } = useTasksParamsStore<ITasksParamsState>(state => state)
     const { open } = useModalStore<IModalState>(state => state);
     const list = useRef(null);
@@ -81,8 +86,7 @@ function App() {
     }
 
     return (
-        <>
-            <button onClick={() => {console.log(pagination); console.log(tasks)}}>asdasdasda</button>
+        <AppWrapper>
             <Controls>
                 <Button onClick={() => {open()}}>Add</Button>
                 <Select
@@ -109,7 +113,7 @@ function App() {
                 }
             </RefWrapper>
             <ModalAddEdit />
-        </>
+        </AppWrapper>
     )
 }
 
