@@ -66,7 +66,7 @@ const TaskItem = memo(({id, title, description, status}: ITaskItem) => {
     const [statusState, setStatusState] = useState<TStatus>(status);
 
     const [removeFetch, loadingRemove, errorRemove] = useFetch(async (id: number) => {
-        const res = await removeTaskById(id);
+        await removeTaskById(id);
 
         if (!errorRemove) {
             // если 0, то таска удалилась на сервере, можем удалить на клиенте
@@ -77,7 +77,7 @@ const TaskItem = memo(({id, title, description, status}: ITaskItem) => {
     });
     const [updateStatusFetch, loadingupdateStatus, errorUpdateStatus] = useFetch(
         async (id: number, newStatus: TStatus) => {
-            const res = await updateTaskById(id, {
+            await updateTaskById(id, {
                 status: newStatus,
                 title: title,
                 description: description,
@@ -144,7 +144,7 @@ const TaskItem = memo(({id, title, description, status}: ITaskItem) => {
                 </Typography.Title>
                 <Status>
                     <Select
-                        value={statusState.split(" ")[0]}
+                        value={statusState.split(" ")[0] as TStatus}
                         options={[
                             {value: "not_completed", label: <span>In progress</span>},
                             {value: "completed", label: <span>Completed</span>},
@@ -157,6 +157,7 @@ const TaskItem = memo(({id, title, description, status}: ITaskItem) => {
                         type={statusState.length > "not_completed".length ? "primary" : "default"}
                         onClick={favouriteHandler}
                         icon={<StarOutlined />}
+                        loading={loadingupdateStatus}
                     />
                 </Status>
             </Header>
@@ -174,6 +175,7 @@ const TaskItem = memo(({id, title, description, status}: ITaskItem) => {
                         onClick={removeHandler}
                         icon={<DeleteOutlined />}
                         danger={true}
+                        loading={loadingRemove}
                     />
                 </Controls>
             </Description>

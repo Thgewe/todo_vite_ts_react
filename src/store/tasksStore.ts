@@ -14,8 +14,8 @@ const useTasksStore = create<ITasksState>()((set) => ({
     updateTaskStatus: (id, newStatus) => set((state) =>
         ({tasks: state.tasks.map((task) =>
             task.id === id ? {
-                status: newStatus,
                 ...task,
+                status: newStatus,
             } : task)
         })),
 }));

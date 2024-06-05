@@ -17,8 +17,8 @@ const TaskList = () => {
 
     return (
         <List>
-            {tasks.map((task, index) => <TaskItem
-                key={task.id + "" + index}
+            {tasks.map((task) => <TaskItem
+                key={task.id}
                 id={task.id}
                 title={task.title}
                 description={task.description}
@@ -32,7 +32,6 @@ const TaskList = () => {
                             ? "not_completed"
                             : "not_completed favourite"
                 }
-                index={index}
             />)}
         </List>
     );

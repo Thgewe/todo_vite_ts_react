@@ -14,11 +14,16 @@ export const useFetch = (callback: Function): [Function, boolean, IError | null]
         } catch (e) {
             setLoading(false);
             setError({
+                //@ts-ignore
                 data: e.data,
                 error: {
+                    //@ts-ignore
                     status: e.status,
+                    //@ts-ignore
                     name: e.name,
+                    //@ts-ignore
                     message: e.message,
+                    //@ts-ignore
                     details: e.details,
                 }
             })

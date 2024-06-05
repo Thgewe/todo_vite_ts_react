@@ -68,13 +68,15 @@ function App() {
         scrollHandler(pagination, isLoading);
     }
     const scrollHandler = paginationDebounce((pagination: ITasksParamsState["pagination"], isLoading: boolean) => {
-        if ((list.current as HTMLDivElement).clientHeight
-            - document.documentElement.clientHeight
-            - document.documentElement.scrollTop
-            < document.documentElement.clientHeight + 100 && !isLoading) {
-            if (pagination && pagination.page < pagination.pageCount) {
-                console.log("fetching");
-                fetching(filters.status, pagination.page + 1)
+        if (list.current) {
+            if ((list.current as HTMLDivElement).clientHeight
+                - document.documentElement.clientHeight
+                - document.documentElement.scrollTop
+                < document.documentElement.clientHeight + 100 && !isLoading) {
+                if (pagination && pagination.page < pagination.pageCount) {
+                    console.log("fetching");
+                    fetching(filters.status, pagination.page + 1)
+                }
             }
         }
     }, 200)

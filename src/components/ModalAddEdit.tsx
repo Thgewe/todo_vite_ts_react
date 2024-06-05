@@ -27,7 +27,7 @@ const ModalAddEdit = () => {
         title: "",
         description: "",
     });
-    const [postTaskFetch, loadingPost, errorPost] = useFetch(
+    const [postTaskFetch, loadingPost] = useFetch(
         async (newTask: ITaskRequest["data"]) => {
             const res = await postNewTask(newTask);
 
@@ -38,7 +38,7 @@ const ModalAddEdit = () => {
 
             close();
     })
-    const [updateTaskFetch, loadingUpdate, errorUpdate] = useFetch(
+    const [updateTaskFetch, loadingUpdate] = useFetch(
         async (newTask: ITaskRequest["data"]) => {
             if (task) {
                 const res = await updateTaskById(task.id, newTask);
@@ -78,7 +78,7 @@ const ModalAddEdit = () => {
             okText={task ? "Edit" : "Add"}
             onCancel={cancelHandler}
             onOk={okHandler}
-            confirmLoading={loadingPost | loadingUpdate}
+            confirmLoading={loadingPost || loadingUpdate}
         >
             <InputWrapper>
                 <Input
