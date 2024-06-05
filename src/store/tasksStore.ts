@@ -3,6 +3,7 @@ import ITasksState from "../models/ITasksState";
 
 const useTasksStore = create<ITasksState>()((set) => ({
     tasks: [],
+    clear: () => set(() => ({tasks: []})),
     overrideTasks: (tasks) => set(() => ({tasks: tasks})),
     addTask: (task) => set((state) => ({tasks: [task, ...state.tasks]})),
     addTaskList: (tasks) => set((state) => ({tasks: [...state.tasks, ...tasks]})),

@@ -3,6 +3,7 @@ import {TStatus} from "./TStatus";
 
 export default interface ITasksState {
     tasks: TTaskWithID[],
+    clear: () => void,
     overrideTasks: (tasks: TTaskWithID[]) => void,
     addTask: (task: TTaskWithID) => void,
     addTaskList: (tasks: TTaskWithID[]) => void,

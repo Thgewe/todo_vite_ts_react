@@ -7,7 +7,7 @@ import useTasksStore from "./store/tasksStore";
 import ModalAddEdit from "./components/ModalAddEdit";
 import useModalStore from "./store/modalStore";
 import IModalState from "./models/IModalState";
-import {Button, Select} from "antd";
+import {Alert, Button, Select} from "antd";
 import {debounce} from "./utils/debounce";
 import useTasksParamsStore from "./store/tasksParamsStore";
 import ITasksParamsState from "./models/ITasksParamsState";
@@ -15,8 +15,15 @@ import styled from "styled-components";
 import {buildFiltersStatusParamsString} from "./utils/buildFiltersStatusParamsString";
 import {TSelectStatusValue} from "./models/TSelectStatusValue";
 import ITasksState from "./models/ITasksState";
+import {LoadingOutlined} from "@ant-design/icons";
 
-const RefWrapper = styled.div``;
+const RefWrapper = styled.div`
+  // loadingSvg
+  & > span {
+    display: block;
+    margin: 1rem auto;
+  }
+`;
 const Controls = styled.div`
   display: grid;
   grid-template-columns: 3fr 1fr;  
@@ -24,21 +31,19 @@ const Controls = styled.div`
 `;
 
 function App() {
-    const {addTaskList, overrideTasks} = useTasksStore<ITasksState>(state => state);
+    const {addTaskList, clear} = useTasksStore<ITasksState>(state => state);
     const { filters, pagination, setParams } = useTasksParamsStore<ITasksParamsState>(state => state)
     const { open } = useModalStore<IModalState>(state => state);
     const list = useRef(null);
 
-    // const [fetching, isLoading, isError] = useFetch(async (status: IFilters["status"], page: number) => {
     const [fetching, isLoading, isError] = useFetch(async (statusFilter: TSelectStatusValue, page: number, override = false) => {
         const data = await getTaskList(buildFiltersStatusParamsString(statusFilter), page);
-        if (override) {
-            // Перезаписать таски
-            overrideTasks(data.data.map((item) => ({...item.attributes, id: item.id})));
-        } else {
-            // Добавить в конец
-            addTaskList(data.data.map((item) => ({...item.attributes, id: item.id})));
+
+        if ("error" in data) {
+            throw data.error;
         }
+
+        addTaskList(data.data.map((item) => ({...item.attributes, id: item.id})));
         setParams({status: statusFilter}, data.meta.pagination);
     });
 
@@ -55,16 +60,9 @@ function App() {
     // }, 1200)
 
     const changeStatusFilter = (value: TSelectStatusValue) => {
+        clear();
         fetching(value, 1, true);
     }
-
-    if (isLoading)
-        return <>Loading</>
-
-    if (isError)
-        return <div>
-            {isError.error.status + " | " + isError.error.message}
-        </div>
 
     return (
         <>
@@ -82,10 +80,15 @@ function App() {
                 />
             </Controls>
             <RefWrapper ref={list}>
-                <TaskList />
+                {isError
+                    ? <Alert message={isError.error.status + " " + isError.error.message} type={"error"}/>
+                    : <>
+                        <TaskList />
+                        {isLoading && <LoadingOutlined />}
+                    </>
+                }
             </RefWrapper>
             <ModalAddEdit />
-            {/*<Alert message={"success"} type={"error"}/>*/}
         </>
     )
 }
